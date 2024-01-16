@@ -9,7 +9,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/login', { username, password });
+      const response = await axios.post('https://user-commenter-server.onrender.com/api/login', { username, password });
       const { token } = response.data;
 
       // Save token and username to localStorage

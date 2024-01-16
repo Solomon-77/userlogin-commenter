@@ -12,7 +12,7 @@ const Dashboard = () => {
     // Fetch comments when the component mounts
     const fetchComments = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/comments');
+        const response = await axios.get('https://user-commenter-server.onrender.com/api/comments');
         setComments(response.data.comments);
       } catch (error) {
         console.error('Error fetching comments:', error.response?.data?.error || 'Unknown error');
@@ -33,7 +33,7 @@ const Dashboard = () => {
 
   const handleComment = async () => {
     try {
-      await axios.post('http://localhost:5000/api/comments', { username, comment });
+      await axios.post('https://user-commenter-server.onrender.com/api/comments', { username, comment });
       const updatedComments = [...comments, { comment, author: username }];
       setComments(updatedComments);
       setComment('');
