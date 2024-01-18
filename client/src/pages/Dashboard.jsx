@@ -7,39 +7,59 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
+  const [commentError, setCommentError] = useState('');
 
   useEffect(() => {
-    // Fetch comments when the component mounts
-    const fetchComments = async () => {
+    const fetchStoredComments = () => {
+      const storedComments = JSON.parse(localStorage.getItem('comments')) || [];
+      setComments(storedComments);
+    };
+
+    fetchStoredComments();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserComments = async () => {
       try {
-        const response = await axios.get('https://user-commenter-server.onrender.com/api/comments');
-        setComments(response.data.comments);
+        const { data: { comments: userComments } } = await axios.get(`https://user-commenter-server.onrender.com/api/comments/${username}`);
+        const sortedComments = userComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        setComments(sortedComments);
+        localStorage.setItem('comments', JSON.stringify(sortedComments));
       } catch (error) {
-        console.error('Error fetching comments:', error.response?.data?.error || 'Unknown error');
+        handleApiError(error, 'Error fetching comments');
       }
     };
 
-    fetchComments();
-  }, []);
+    const token = localStorage.getItem('token');
+    token ? fetchUserComments() : navigate('/');
+  }, [username, navigate]);
 
-  // Check if the logged-in user matches the username from the URL parameters
   useEffect(() => {
-    const loggedInUser = localStorage.getItem('username');
-    if (loggedInUser !== username) {
-      // Redirect to the correct URL
-      navigate(`/dashboard/${loggedInUser}`);
-    }
+    const storedUsername = localStorage.getItem('username');
+    username !== storedUsername && navigate(`/dashboard/${storedUsername}`);
   }, [username, navigate]);
 
   const handleComment = async () => {
-    try {
-      await axios.post('https://user-commenter-server.onrender.com/api/comments', { username, comment });
-      const updatedComments = [...comments, { comment, author: username }];
-      setComments(updatedComments);
-      setComment('');
-    } catch (error) {
-      console.error('Comment error:', error.response?.data?.error || 'Unknown error');
+    if (!comment.trim()) {
+      setCommentError('Fill in the textarea.');
+      return;
     }
+
+    try {
+      const { data: { user } } = await axios.post('https://user-commenter-server.onrender.com/api/comments', { username, comment });
+      const newComment = { comment, author: username, timestamp: user.timestamp };
+      const updatedComments = [newComment, ...comments].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      setComments(updatedComments);
+      localStorage.setItem('comments', JSON.stringify(updatedComments));
+      setComment('');
+      setCommentError('');
+    } catch (error) {
+      handleApiError(error, 'Comment error');
+    }
+  };
+
+  const handleApiError = (error, customMessage) => {
+    console.error(`${customMessage}:`, error.response?.data?.error || 'Unknown error');
   };
 
   const handleLogout = () => {
@@ -49,22 +69,46 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
-      <h2>Welcome {username}!</h2>
-      <p>This is your dashboard.</p>
-      <h3>Comments:</h3>
-      <ul>
-        {comments.map((c, index) => (
-          <li key={index}>{c.comment} - {c.author}</li>
-        ))}
-      </ul>
-      <div>
-        <textarea value={comment} onChange={(e) => setComment(e.target.value)} />
-        <br />
-        <button onClick={handleComment}>Post Comment</button>
+    <div className='font-inter absolute h-screen w-full bg-white'>
+      <div className='bg-white fixed flex items-center h-[60px] justify-between w-full z-10 px-6 text-[14px] font-medium'>
+        <div className='flex rounded-lg items-center'>
+          <div className='border border-neutral-800 rounded-l-lg py-1 pl-2 pr-1'>Profile</div>
+          <div className=' text-neutral-200 border border-neutral-800 bg-neutral-800 px-2 py-1 rounded-r-lg'>{username}</div>
+        </div>
+        <div className='bg-neutral-400 h-[1px] w-full top-[60px] absolute left-0' />
+        <div className='flex items-center'>
+          <div className='mx-4 w-[1px] h-6 bg-neutral-400' />
+          <button onClick={handleLogout}>Logout</button>
+        </div>
       </div>
-      <br />
-      <button onClick={handleLogout}>Logout</button>
+      <div className='absolute top-[60px] text-center w-full p-10 flex flex-col items-center'>
+        <div className='mb-2 font-semibold text-md'>Post your comment here:</div>
+        <div>
+          <textarea
+            className='border p-2 w-[300px] h-[80px] border-neutral-500 rounded-lg'
+            value={comment}
+            onChange={(e) => {
+              setComment(e.target.value);
+              setCommentError('');
+            }}
+          />
+          {commentError && <p className='text-red-500 text-sm font-semibold absolute h-screen w-full flex justify-center left-0 top-[157px]'>{commentError}</p>}
+          <br />
+          <button className='rounded-md bg-neutral-800 hover:bg-neutral-900 text-neutral-200 hover:text-white mt-7 px-4 py-1 my-3' onClick={handleComment}>
+            Post
+          </button>
+        </div>
+        <h3 className='my-3 mt-6 font-medium'>Comments:</h3>
+        <ul className='w-[300px] md:w-[35%]'>
+          {comments.map((c, index) => (
+            <li className='p-4 rounded-lg mb-6 border border-neutral-500 px-10' key={index}>
+              <div className='break-words'>{c.comment}</div>
+              <div className='mt-1 font-bold'>{c.author}</div>
+            </li>
+          ))}
+        </ul>
+        <br />
+      </div>
     </div>
   );
 };
