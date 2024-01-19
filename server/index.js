@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const compression = require('compression');
 const cors = require('cors');
 const pool = require('./db');
@@ -11,9 +10,6 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 app.use(compression());
-
-// Serve the static files from the 'build' directory
-app.use(express.static(path.join(__dirname, 'dist')));
 
 // Default route
 app.get('/', (_, res) => res.send('Server is running.'));
@@ -78,11 +74,6 @@ app.get('/api/comments', async (_, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
-});
-
-// Catch-all route for client-side routing
-app.get('*', (_, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start the server
