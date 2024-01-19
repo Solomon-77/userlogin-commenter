@@ -10,24 +10,29 @@ const Dashboard = () => {
   const [commentError, setCommentError] = useState('');
 
   useEffect(() => {
-    const fetchAllComments = async () => {
-      try {
-        const response = await axios.get('https://user-commenter-server.onrender.com/api/comments');
-        const allComments = response.data.comments || [];
+    const storedUsername = localStorage.getItem('username');
 
-        // Sort the comments by timestamp
-        const sortedComments = allComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    // Check if the stored username matches the current username in the URL
+    if (storedUsername !== username) {
+      // Redirect to the correct URL
+      navigate(`/dashboard/${storedUsername}`, { replace: true });
+    } else {
+      // Fetch comments and perform other actions
+      const fetchAllComments = async () => {
+        try {
+          const response = await axios.get('https://user-commenter-server.onrender.com/api/comments');
+          const allComments = response.data.comments || [];
+          const sortedComments = allComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          setComments(sortedComments);
+        } catch (error) {
+          handleApiError(error, 'Error fetching all comments');
+        }
+      };
 
-        // Update state with sorted comments
-        setComments(sortedComments);
-      } catch (error) {
-        handleApiError(error, 'Error fetching all comments');
-      }
-    };
-
-    const token = localStorage.getItem('token');
-    token ? fetchAllComments() : navigate('/');
-  }, [navigate]);
+      const token = localStorage.getItem('token');
+      token ? fetchAllComments() : navigate('/');
+    }
+  }, [navigate, username]);
 
   const handleComment = async () => {
     if (!comment.trim()) {
