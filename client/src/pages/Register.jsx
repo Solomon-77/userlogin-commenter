@@ -38,7 +38,7 @@ const Register = () => {
   };
 
   return (
-    <div className='font-inter dark:bg-neutral-900 min-h-screen w-full flex flex-col items-center justify-center p-5'>
+    <div className='font-inter min-h-screen w-full flex flex-col items-center justify-center p-5'>
       <div className='flex flex-col px-6 md:px-12 py-4 rounded-lg border max-w-[20rem] w-full border-neutral-500 bg-white'>
         <div className='text-center font-bold my-6 text-3xl'>Register</div>
         <input
