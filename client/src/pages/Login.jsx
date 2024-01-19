@@ -15,7 +15,7 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/login', { username, password });
+      const response = await axios.post('https://user-commenter-server.onrender.com/api/login', { username, password });
       const { token } = response.data;
 
       localStorage.setItem('token', token);

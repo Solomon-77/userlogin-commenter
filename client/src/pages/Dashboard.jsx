@@ -12,7 +12,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchAllComments = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/comments');
+        const response = await axios.get('https://user-commenter-server.onrender.com/api/comments');
         const allComments = response.data.comments || [];
 
         // Sort the comments by timestamp
@@ -36,7 +36,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/comments', { username, comment });
+      const response = await axios.post('https://user-commenter-server.onrender.com/api/comments', { username, comment });
       const newComment = { comment, author: username, timestamp: response.data.user.timestamp };
       const updatedComments = [newComment, ...comments].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       setComments(updatedComments);
