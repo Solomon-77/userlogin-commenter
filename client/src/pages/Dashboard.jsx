@@ -10,34 +10,24 @@ const Dashboard = () => {
   const [commentError, setCommentError] = useState('');
 
   useEffect(() => {
-    const fetchStoredComments = () => {
-      const storedComments = JSON.parse(localStorage.getItem('comments')) || [];
-      setComments(storedComments);
-    };
-
-    fetchStoredComments();
-  }, []);
-
-  useEffect(() => {
-    const fetchUserComments = async () => {
+    const fetchAllComments = async () => {
       try {
-        const { data: { comments: userComments } } = await axios.get(`https://user-commenter-server.onrender.com/api/comments/${username}`);
-        const sortedComments = userComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        const response = await axios.get('http://localhost:5000/api/comments');
+        const allComments = response.data.comments || [];
+
+        // Sort the comments by timestamp
+        const sortedComments = allComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        // Update state with sorted comments
         setComments(sortedComments);
-        localStorage.setItem('comments', JSON.stringify(sortedComments));
       } catch (error) {
-        handleApiError(error, 'Error fetching comments');
+        handleApiError(error, 'Error fetching all comments');
       }
     };
 
     const token = localStorage.getItem('token');
-    token ? fetchUserComments() : navigate('/');
-  }, [username, navigate]);
-
-  useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    username !== storedUsername && navigate(`/dashboard/${storedUsername}`);
-  }, [username, navigate]);
+    token ? fetchAllComments() : navigate('/');
+  }, [navigate]);
 
   const handleComment = async () => {
     if (!comment.trim()) {
@@ -46,11 +36,10 @@ const Dashboard = () => {
     }
 
     try {
-      const { data: { user } } = await axios.post('https://user-commenter-server.onrender.com/api/comments', { username, comment });
-      const newComment = { comment, author: username, timestamp: user.timestamp };
+      const response = await axios.post('http://localhost:5000/api/comments', { username, comment });
+      const newComment = { comment, author: username, timestamp: response.data.user.timestamp };
       const updatedComments = [newComment, ...comments].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       setComments(updatedComments);
-      localStorage.setItem('comments', JSON.stringify(updatedComments));
       setComment('');
       setCommentError('');
     } catch (error) {
@@ -82,7 +71,7 @@ const Dashboard = () => {
         </div>
       </div>
       <div className='absolute top-[60px] text-center w-full p-10 flex flex-col items-center'>
-        <div className='mb-2 font-semibold text-md'>Post your comment here:</div>
+        <div className='mb-2 font-semibold text-md'>Post your comment here my n1gga:</div>
         <div>
           <textarea
             className='border p-2 w-[300px] h-[80px] border-neutral-500 rounded-lg'

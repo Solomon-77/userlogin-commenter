@@ -15,7 +15,8 @@ const Login = () => {
     }
 
     try {
-      const { data: { token } } = await axios.post('https://user-commenter-server.onrender.com/api/login', { username, password });
+      const response = await axios.post('http://localhost:5000/api/login', { username, password });
+      const { token } = response.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('username', username);
@@ -51,7 +52,9 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         {error && <div className="text-red-600 font-medium mb-1 text-center text-sm">{error}</div>}
-        <button className="mt-8 mb-4 py-[7px] text-lg bg-neutral-800 hover:bg-neutral-900 rounded-full text-neutral-200 hover:text-white" onClick={handleLogin}>Login</button>
+        <button className="mt-8 mb-4 py-[7px] text-lg bg-neutral-800 hover:bg-neutral-900 rounded-full text-neutral-200 hover:text-white" onClick={handleLogin}>
+          Login
+        </button>
         <div className="flex items-center justify-center mb-6 text-sm text-neutral-600">
           <Link to="/register/" className="mr-1 text-neutral-700 font-semibold hover:text-neutral-800">Register</Link>here my nig
         </div>

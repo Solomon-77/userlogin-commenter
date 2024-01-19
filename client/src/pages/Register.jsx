@@ -16,20 +16,25 @@ const Register = () => {
     }
 
     try {
-      await axios.post('https://user-commenter-server.onrender.com/api/register', { username, password });
+      await axios.post('http://localhost:5000/api/register', { username, password });
       setSuccessMessage('User Registered');
       setError('');
       console.log('User registered successfully');
     } catch (error) {
-      const status = error.response?.status || 500;
-      setError(`Registration error: ${error.response?.data?.error || 'Unknown error'}`);
-      setSuccessMessage('');
-      console.error('Registration error:', error.response?.data?.error || 'Unknown error');
-
-      if (status === 409) {
-        setError('User already exists.');
-      }
+      handleRegistrationError(error);
     }
+  };
+
+  const handleRegistrationError = (error) => {
+    const status = error.response?.status || 500;
+    setError(`Registration error: ${error.response?.data?.error || 'Unknown error'}`);
+    setSuccessMessage('');
+
+    if (status === 409) {
+      setError('User already exists.');
+    }
+
+    console.error('Registration error:', error.response?.data?.error || 'Unknown error');
   };
 
   return (
@@ -46,6 +51,7 @@ const Register = () => {
         <input
           placeholder='Password'
           className='border-b py-2 mb-3 border-neutral-500 outline-none'
+          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
