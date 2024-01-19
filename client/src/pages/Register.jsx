@@ -59,7 +59,7 @@ const Register = () => {
         {successMessage && <div className="text-green-600 font-medium mb-1 text-center text-sm">{successMessage}</div>}
         <button className='mt-8 mb-4 py-[7px] text-lg bg-neutral-800 hover:bg-neutral-900 rounded-full text-neutral-200 hover:text-white' onClick={handleRegister}>Register</button>
         <div className='flex items-center justify-center mb-6 text-sm text-neutral-600'>
-          <Link to='/' className='mr-1 text-neutral-700 hover:text-neutral-800 font-semibold'>Login</Link>here my nig
+          <Link to='/' className='mr-1 text-neutral-700 hover:text-neutral-800 font-semibold'>Login</Link>if registered
         </div>
       </div>
     </div>

@@ -56,7 +56,7 @@ const Login = () => {
           Login
         </button>
         <div className="flex items-center justify-center mb-6 text-sm text-neutral-600">
-          <Link to="/register/" className="mr-1 text-neutral-700 font-semibold hover:text-neutral-800">Register</Link>here my nig
+          <Link to="/register/" className="mr-1 text-neutral-700 font-semibold hover:text-neutral-800">Register</Link>to create account
         </div>
       </div>
     </div>

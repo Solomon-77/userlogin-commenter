@@ -76,7 +76,7 @@ const Dashboard = () => {
         </div>
       </div>
       <div className='absolute top-[60px] text-center w-full p-10 flex flex-col items-center'>
-        <div className='mb-2 font-semibold text-md'>Post your comment here my n1gga:</div>
+        <div className='mb-2 font-semibold text-md'>Post your comment here:</div>
         <div>
           <textarea
             className='border p-2 w-[300px] h-[80px] border-neutral-500 rounded-lg'
