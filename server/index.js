@@ -2,6 +2,7 @@ const express = require('express');
 const compression = require('compression');
 const cors = require('cors');
 const pool = require('./db');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,6 +11,13 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 app.use(compression());
+
+// server static
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 // Default route
 app.get('/', (_, res) => res.send('Server is running.'));
