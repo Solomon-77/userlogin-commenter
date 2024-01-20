@@ -20,7 +20,7 @@ const Dashboard = () => {
       // Fetch comments and perform other actions
       const fetchAllComments = async () => {
         try {
-          const response = await axios.get('https://user-commenter-server.onrender.com/api/comments');
+          const response = await axios.get('http://localhost:5000/api/comments');
           const allComments = response.data.comments || [];
           const sortedComments = allComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
           setComments(sortedComments);

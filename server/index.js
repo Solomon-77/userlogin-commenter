@@ -11,6 +11,12 @@ app.use(express.json());
 app.use(cors());
 app.use(compression());
 
+// Index creation query
+const createIndexQuery = 'CREATE INDEX IF NOT EXISTS idx_username ON users(username)';
+pool.query(createIndexQuery)
+  .then(() => console.log('Index created successfully'))
+  .catch(err => console.error('Error creating index:', err));
+
 // Default route
 app.get('/', (_, res) => res.send('Server is running.'));
 
